@@ -119,7 +119,15 @@ def Backward(a1, a2, X, Y, i, learningRate):
     bias[2] -= learningRate * delta_2                                               # 3 * 1
 
 def stochastic_backpropagation(X, Y):
+    currentEpoch = 0
+    while (average_cross_entropy(X, Y) >= fault_tolerance).all() and currentEpoch < epoch:
+        for i in range(num_train_data):
+            new_learningRate = learningRate * pow( 0.95, currentEpoch)              # 隨著世代增加，讓步伐逐漸減小
+            a1, a2 = Feedforward(X, i)
+            Backward(a1, a2, X, Y, i, new_learningRate)
+        currentEpoch += 1                                                           # 增加一個世代
     
+    print("停止於第 " + currentEpoch + " 世代數")
 
 
 def main():
