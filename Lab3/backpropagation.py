@@ -106,7 +106,8 @@ def test(X):
         row, column = np.where(a2 == np.max(a2))                    # 取得訓練後預測的值(a2中的y1, y2, y3)最大的index
         y_hat = int(row)                                            # y^ = 預測的數字
         ans.append(str(y_hat))
-        ans.to_csv('./test_ans.csv', index=False)                   # 寫入test.csv
+    ans = pd.DataFrame(ans)
+    ans.to_csv('./test_ans.csv', index=False)                   # 寫入test.csv
 
 # Compute the output for each neuron in the network
 def Feedforward(X, i):
