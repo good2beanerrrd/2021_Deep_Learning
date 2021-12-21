@@ -15,6 +15,7 @@ num_train_data = 12800									# 要train的img的資料筆數
 num_validate = 3200										# 用來驗證的img的資料筆數
 num_test = 4000											# 無類別測試資料
 output_model = np.array([[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]) 			# One-Hot Encoding
+                        # 0                        3                8                       9
 fault_tolerance = np.array([[tau], [tau], [tau], [tau]]) 						# 容錯率
 
 # Initialize all network weights/biases to small random numbers 
@@ -44,6 +45,18 @@ def getTestData():
     test_Data = pd.DataFrame(test_Data).to_numpy()
     return test_Data
 
+# 轉換label
+def getLabel(Y, i):
+    if Y[i] == 0:
+        return 0
+    elif Y[i] == 3:
+        return 1
+    elif Y[i] == 8:
+        return 2
+    else:
+        return 3
+    
+
 #activation function -> sigmoid function
 def sigmoid(n):
     return 1.0 / ( 1.0 + np.exp( -n ))
@@ -59,7 +72,8 @@ def average_cross_entropy(X, Y):
     sum_cross_entropy = np.array( [0.0]*num_OutputY ).reshape(num_OutputY, 1)		# [ [0.0], [0.0], [0.0] ,[0.0] ]
     for i in range(num_train_data):
         a1, a2 = Feedforward(X, i)
-        sum_cross_entropy += cross_entropy(output_model[ Y[i] ].reshape(num_OutputY, 1), a2)
+        label = getLabel(Y, i)
+        sum_cross_entropy += cross_entropy(output_model[ label ].reshape(num_OutputY, 1), a2)
     return sum_cross_entropy / num_train_data
 
 # 前面12800筆的資料訓練的訓練準確率
@@ -105,7 +119,8 @@ def Feedforward(X, i):
 
 def Backward(a1, a2, X, Y, i, learningRate):
     # Step 2.1 Calculate the error vector for the output layer
-    delta_2 = a2 - output_model[ Y[i] ].reshape(num_OutputY, 1)     # 4*1
+    label = getLabel(Y, i)
+    delta_2 = a2 - output_model[ label ].reshape(num_OutputY, 1)     # 4*1
 
     # Step 2.2 Backprograte the error for each hidden layer
     delta_1 = np.multiply(np.dot( weight[2].reshape( num_hidden_neuron, num_OutputY ), delta_2), np.multiply(a1, 1-a1))     # num_hidden_neuron * 1
@@ -128,7 +143,7 @@ def stochastic_backpropagation(X, Y):
             Backward(a1, a2, X, Y, i, new_learningRate)
         currentEpoch += 1                                                           # 增加一個世代
     
-    print("停止於第 " + currentEpoch + " 世代數")
+    print("停止於第 " + str(currentEpoch) + " 世代數")
 
 
 def main():
