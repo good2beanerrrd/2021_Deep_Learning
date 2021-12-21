@@ -31,7 +31,7 @@ bias = [0, layer1_bias, layer2_bias]
 # 得到訓練資料的input X
 def getTrainData():
     #read and convert the training data to numpy array
-    train_Data = pd.read_csv('./lab3_test.csv')
+    train_Data = pd.read_csv('./lab3_train.csv')
     train_Data = pd.DataFrame(train_Data).to_numpy()
     train_Data_Y = pd.DataFrame(train_Data[:,0]).to_numpy()    #y array
     train_Data = np.delete(train_Data, 0, 1)
