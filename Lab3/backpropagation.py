@@ -45,7 +45,7 @@ def getTestData():
     test_Data = pd.DataFrame(test_Data).to_numpy()
     return test_Data
 
-# 轉換label
+# 轉換label for training
 def getLabel(Y, i):
     if Y[i] == 0:
         return 0
@@ -55,6 +55,17 @@ def getLabel(Y, i):
         return 2
     else:
         return 3
+
+#轉換label for test
+def getTestLabel(row):
+    if row == 0:
+        return 0
+    elif row == 1:
+        return 3
+    elif row == 2:
+        return 8
+    else:
+        return 9
     
 
 #activation function -> sigmoid function
@@ -88,26 +99,29 @@ def training_accuracy(X, Y):
 	return str(ctr *100 / np.double(num_train_data)) + " %"					# 印出訓練準確率
 
 # 後面3200筆的資料訓練的驗證準確率
-def vaildate_accuracy(X, Y):
-	cnt = 0											# 計算訓練正確的筆數 
-	for i in range(num_train_data, num_train_data + num_validate):				# 第12801~16000筆訓練資料
-		a1, a2 = Feedforward(X, i)							# 取得a2
-		row, column = np.where(a2 == np.max(a2)) 					# 取得訓練後預測的值(a2中的y1, y2, y3)最大的index
-		y_hat = int(row)								# y^ = 預測的數字
-		if Y[i] == y_hat:								# 判斷預測的數字是否等於正確的label
-			cnt += 1								# 如果驗證相同則crt加一
-	return str(cnt *100 / np.double(num_validate)) + " %"					# 印出驗證準確率
+def vaildate_accuracy(X, Y):                                                # 計算訓練正確的筆數
+    ctr = 0
+    for i in range(num_train_data, num_train_data + num_validate):          # 第12801~16000筆訓練資料
+        a1, a2 = Feedforward(X, i)                                          # 取得a2
+        row, column = np.where(a2 == np.max(a2))                            # 取得訓練後預測的值(a2中的y1, y2, y3, y4)最大的index
+        label = getTestLabel(int(row))
+        y_hat = label                                                       # y^ = 預測的數字
+        if Y[i] == y_hat:                                                   # 判斷預測的數字是否等於正確的label
+            ctr += 1                                                        # 如果驗證相同則crt加一
+    return str(ctr * 100 / np.double(num_validate)) + " %"
+
 
 # 測試資料預測結果
 def test(X):
     ans = []
     for i in range(num_test):
         a1, a2 = Feedforward(X, i)
-        row, column = np.where(a2 == np.max(a2))                    # 取得訓練後預測的值(a2中的y1, y2, y3)最大的index
-        y_hat = int(row)                                            # y^ = 預測的數字
+        row, column = np.where(a2 == np.max(a2))                    # 取得訓練後預測的值(a2中的y1, y2, y3, y4)最大的index
+        label = getTestLabel(int(row))
+        y_hat = label                                               # y^ = 預測的數字
         ans.append(str(y_hat))
     ans = pd.DataFrame(ans)
-    ans.to_csv('./test_ans.csv', index=False)                   # 寫入test.csv
+    ans.to_csv('./test_ans.csv', index=False)                       # 寫入test.csv
 
 # Compute the output for each neuron in the network
 def Feedforward(X, i):
