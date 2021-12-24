@@ -4,8 +4,8 @@ import pandas as pd
 import warnings
 warnings.filterwarnings("ignore", category=Warning)
 
-learningRate = 0.01										# 學習率
-tau = 0.1											    # 容錯率
+learningRate = 0.001										# 學習率
+tau = 0.01											    # 容錯率
 epoch = 30											    # 最大世代數
 num_InputX = 784										# 輸入層包含784個節點
 num_hidden_layer = 1									# 隱藏層的層數
@@ -46,7 +46,7 @@ def getTestData():
     return test_Data
 
 # 轉換label for training
-def getLabel(Y, i):
+def getRow(Y, i):
     if Y[i] == 0:
         return 0
     elif Y[i] == 3:
@@ -83,20 +83,21 @@ def average_cross_entropy(X, Y):
     sum_cross_entropy = np.array( [0.0]*num_OutputY ).reshape(num_OutputY, 1)		# [ [0.0], [0.0], [0.0] ,[0.0] ]
     for i in range(num_train_data):
         a1, a2 = Feedforward(X, i)
-        label = getLabel(Y, i)
-        sum_cross_entropy += cross_entropy(output_model[ label ].reshape(num_OutputY, 1), a2)
+        row = getRow(Y, i)
+        sum_cross_entropy += cross_entropy(output_model[ row ].reshape(num_OutputY, 1), a2)
     return sum_cross_entropy / num_train_data
 
 # 前面12800筆的資料訓練的訓練準確率
 def training_accuracy(X, Y):
-	ctr = 0											# 計算訓練正確的筆數 
-	for i in range(num_train_data):								# 第1~12800筆訓練資料
-		a1, a2 = Feedforward(X, i)							# 取得a2
-		row, column = np.where(a2 == np.max(a2)) 					# 取得訓練後預測的值(a2中的y1, y2, y3)最大的index
-		y_hat = int(row)								# y^ = 預測的數字
-		if Y[i] == y_hat:								# 判斷預測的數字是否等於正確的label
-			ctr += 1								# 如果驗證相同則crt加一
-	return str(ctr *100 / np.double(num_train_data)) + " %"					# 印出訓練準確率
+    ctr = 0                                                     # 計算訓練正確的筆數 
+    for i in range(num_train_data):                             # 第1~12800筆訓練資料
+        a1, a2 = Feedforward(X, i)                              # 取得a2
+        row, column = np.where(a2 == np.max(a2))                # 取得訓練後預測的值(a2中的y1, y2, y3, y4)最大的index
+        label = getTestLabel(int(row))
+        y_hat = label                                        # y^ = 預測的數字
+        if Y[i] == y_hat:                                       # 判斷預測的數字是否等於正確的label
+            ctr += 1                                            # 如果驗證相同則crt加一
+    return str(ctr * 100 / np.double(num_train_data)) + " %"    # 印出訓練準確率				
 
 # 後面3200筆的資料訓練的驗證準確率
 def vaildate_accuracy(X, Y):                                                # 計算訓練正確的筆數
@@ -133,9 +134,10 @@ def Feedforward(X, i):
     return a1, a2
 
 def Backward(a1, a2, X, Y, i, learningRate):
+    global weight, bias
     # Step 2.1 Calculate the error vector for the output layer
-    label = getLabel(Y, i)
-    delta_2 = a2 - output_model[ label ].reshape(num_OutputY, 1)     # 4*1
+    row = getRow(Y, i)
+    delta_2 = a2 - output_model[ row ].reshape(num_OutputY, 1)     # 4*1
 
     # Step 2.2 Backprograte the error for each hidden layer
     delta_1 = np.multiply(np.dot( weight[2].reshape( num_hidden_neuron, num_OutputY ), delta_2), np.multiply(a1, 1-a1))     # num_hidden_neuron * 1
@@ -146,8 +148,8 @@ def Backward(a1, a2, X, Y, i, learningRate):
     bias[1] -= learningRate * delta_1                           # num_hidden_neuron * 1
 
     #layer 2
-    weight[2] -= learningRate * delta_2 * a1.reshape(1, num_hidden_neuron)          # 3 * num_hidden_neuron
-    bias[2] -= learningRate * delta_2                                               # 3 * 1
+    weight[2] -= learningRate * delta_2 * a1.reshape(1, num_hidden_neuron)          # 4 * num_hidden_neuron
+    bias[2] -= learningRate * delta_2                                               # 4 * 1
 
 def stochastic_backpropagation(X, Y):
     currentEpoch = 0
