@@ -1,0 +1,78 @@
+#Tensor
+#創建空的tensor
+x = torch.empty(2)      ＃一維的兩個資料
+print(x)
+# tensor([5.2430e+33, 5.4511e-43]) whatever
+
+#創建指定維度的tensor
+x = torch.empty(2, 3)
+print(x)
+# tensor([  [0., 0., 0.],
+#        [0., 0., 0.]   ]) whatever
+
+#創建0 tensor
+x = torch.zeros(2, 3)
+print(x)
+# tensor([  [0., 0., 0.],
+#        [0., 0., 0.]   ])
+
+#創建random tensor
+x = torch.rand(2, 3)
+print(x)
+# tensor([  [0., 0.5323, 0.4534],
+#        [0.4532, 0.7465, 0.2341]   ])
+
+#Data
+#查看data type
+x = torch.ones(2,3)
+print(x.type)
+# torch.float32
+
+#give a data type
+x = torch.ones(2,3, dtype=torch.int)
+print(x.type)
+# torch.int
+
+#查看data size
+x = torch.ones(2,3)
+print(x.size())
+# torch.Size([2, 3])
+
+#直接賦予值
+x = torch.tensor([2, 3])
+print(x)
+# tensor([2, 3])
+print(x.size())
+# torch.Size([2])
+
+#calculation
+#直接用+, -, *, /   或者
+ans = torch.add(x1, x2)
+ans = torch.mul(x1, x2)
+ans = torch.sub(x1, x2)
+ans = torch.div(x1, x2)
+
+# tensor -> numpy
+a = torch.ones(5)
+print(a)
+b = a.numpy()
+print(b)
+# tensor( [1., 1., 1., 1., 1.] )
+# [1., 1., 1., 1., 1.]  
+
+# numpy -> tensor
+a = np.ones(5)
+print(a)
+b = torch.from_numpy(a)
+print(b)
+# [1., 1., 1., 1., 1.]  
+# tensor( [1., 1., 1., 1., 1.], dtype=torch.float64 )
+
+#如果使用CPU要特別注意，tensor a和numpy b
+#指向同一個memory address，操作會同步
+#所以更改會同步
+a.add(1)
+print(a)
+print(b)
+# tensor( [2., 2., 2., 2., 2.] )
+# [2., 2., 2., 2., 2.]
