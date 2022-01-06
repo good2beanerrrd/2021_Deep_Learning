@@ -1,0 +1,22 @@
+# Cross_Entropy
+#------------in Python------------#
+import numpy as np
+class BinaryCrossEntropy():
+    def __init__(self):
+        super(BinaryCrossEntropy, self).__init__()
+    
+    def cross_entropy(self, y_pred, target):
+        x = target * np.log(y_pred) + (1-target) * np.log(1-y_pred)
+
+        return -(np.mean(x))
+    
+    def forward(self, y_pred, target):
+
+        return self.cross_entropy(y_pred, target)
+
+criterion = BinaryCrossEntropy()
+
+
+#------------in Pytorch------------#
+# BCE stands for Binary Cross Entropy
+criterion = nn.BCELoss()

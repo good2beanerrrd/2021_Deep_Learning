@@ -1,0 +1,20 @@
+# GradientDescent
+#------------in Python------------#
+import numpy as np
+class GradientDescent():
+    def __init__(self, lr=0.1):
+        super(GradientDescent, self).__init__()
+        self.lr = lr
+    
+    def forward(self, w, b, y_pred, target, data):
+        w = w - self.lr * np.mean(data * (y_pred - target), axis=0)
+        b = b - self.lr * np.mean((y_pred - target), axis=0)
+
+        return w, b
+
+optimizer = GradientDescent(lr=learning_rate)
+
+#------------in Pytorch------------#
+# SGD stands for Stochastic Gradient Descent
+optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+# model裡的parameters存了weights, bias

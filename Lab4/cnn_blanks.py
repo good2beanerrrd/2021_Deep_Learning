@@ -7,6 +7,7 @@ Please answer carefully.
 
 # Please import the required packages
 import torch
+import torch.nn as nn
 
 # Define NeuralNetwork
 class ConvolutionalNeuralNetwork(nn.Module):
@@ -18,7 +19,7 @@ class ConvolutionalNeuralNetwork(nn.Module):
         # ------- convalution layer -------
         # please add at least one more layer of conv
         # ::: your code :::
-        self.conv1 = nn.Conv2d(in_channels=, out_channels=, kernel_size=)
+        self.conv1 = nn.Conv2d(in_channels=2, out_channels=1, kernel_size=3)
 
         # ::: end of code :::
 
