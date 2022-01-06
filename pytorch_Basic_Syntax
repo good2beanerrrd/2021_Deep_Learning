@@ -1,3 +1,5 @@
+# 引用套件dataset
+from torch.utils.data import Dataset
 #Tensor
 #創建空的tensor
 x = torch.empty(2)      ＃一維的兩個資料
