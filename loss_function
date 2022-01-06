@@ -16,7 +16,7 @@ class BinaryCrossEntropy():
 
 criterion = BinaryCrossEntropy()
 
-
 #------------in Pytorch------------#
 # BCE stands for Binary Cross Entropy
+import torch.nn as nn
 criterion = nn.BCELoss()
