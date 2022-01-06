@@ -1,0 +1,40 @@
+# model
+#------------in Python------------#
+# f = wx + b, sigmoid at the end
+import numpy as np
+
+class LogisticRegression():
+    def __init__(self):
+        super(LogisticRegression, self).__init__()
+    
+    def linear(self, x, w, b):
+
+        return np.dot(x, w) + b
+    
+    def sigmoid(self, x):
+
+        return 1/(1 + np.exp(-x))
+    
+    def forward(self, x, w, b):
+
+        return y_pred
+
+model = LogisticRegression()
+
+# sigmoid function交給了 torch.sigmoid
+#------------in Pytorch------------#
+import torch
+import torch.nn as nn
+class LogisticRegression(nn.Module):
+    def __init__(self, input_dim):
+        super(LogisticRegression, self).__init__()
+
+        # define layers
+        self.linear = nn.Linear(input_dim, 1)
+    
+    def forward(self, x):
+        y_predicted = torch.sigmoid(self.linear(x))
+
+        return y_predicted
+
+model = LogisticRegression(n_features)
