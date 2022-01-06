@@ -1,0 +1,29 @@
+# f(x) = w*x
+def forward(x):
+
+    return w * x
+
+# loss function => (y_hat - y)^2
+def loss(y, y_predicted):
+
+    return ((y_predicted-y) ** 2).mean()
+
+# 參數創立時，開啟一個requires_grad
+x = torch.randn(3, requires_grad=True)
+print(x)
+# tensor([-0.2124, -0.1003, -0.3773], requires_grad=True)
+# 開啟後，計算的過程會自動產生backward function
+y = x + 2
+print(y)
+# tensor([1.7876, 1.8997, 1.6227], grad_fn=<AddBackward()>)
+z = y * y * 2
+# tensor([6.3911, 7.2174, 5.2663], grad_fn=<MulBackward>)
+z = z.mean()
+print(z)
+# tensor([6.2916], grad_fn=<MeanBackward()>)
+# 也就是說一但開啟requires_grad就會開啟backward function依據當下的計算模式自動計算
+
+# 使用torch.backward()呼叫backward calculate時就等於計算了dy/dx
+z.backward()
+print(x.grad)
+# tensor([2.3835, 2.5329, 2.1636])
