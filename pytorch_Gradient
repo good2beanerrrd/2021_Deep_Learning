@@ -8,6 +8,7 @@ def loss(y, y_predicted):
 
     return ((y_predicted-y) ** 2).mean()
 
+#-----------------------------------------------------------------------------#
 # 參數創立時，開啟一個requires_grad
 x = torch.randn(3, requires_grad=True)
 print(x)
@@ -27,3 +28,46 @@ print(z)
 z.backward()
 print(x.grad)
 # tensor([2.3835, 2.5329, 2.1636])
+
+#-----------------------------------------------------------------------------#
+# update parameter例如更新weights，不需要再產生gradient function了，有三種方式可達到
+
+# 第一種為：x.requires_grad_(False)
+import torch
+
+x = torch.randn(3, requires_grad=True)
+# tensor([-0.2124, -0.1003, -0.3773], requires_grad=True)
+
+# using: x.requires_grad_(False)
+# 關閉grad func
+x.requires_grad_(False)
+print(x)
+# tensor([-0.2124, -0.1003, -0.3773])
+
+#--------------------------#
+# 第二種為：x.detach()
+import torch
+
+x = torch.randn(3, requires_grad=True)
+# tensor([-0.2124, -0.1003, -0.3773], requires_grad=True)
+
+# using: x.detach()
+y = x.detach()
+print(y)
+# tensor([-0.2124, -0.1003, -0.3773])
+
+#--------------------------#
+# 第三種為：with torch.no_grad()
+import torch
+
+x = torch.randn(3, requires_grad=True)
+# tensor([-0.2124, -0.1003, -0.3773], requires_grad=True)
+
+# using: with torch.no_grad()
+with torch.no_grad():
+    print(y)
+    # tensor([-0.2124, -0.1003, -0.3773])
+
+#-----------------------------------------------------------------------------#
+# pytorch的grad運算是疊加的，所以每個訓練的迴圈結束後都要淨空grad
+x.grad.zero_()
