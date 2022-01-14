@@ -9,6 +9,8 @@ Please answer carefully.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.utils.data as data
+from torch.utils.data.dataset import random_split
 import torchvision.datasets as datasets
 from torch.utils.data import DataLoader
 import torch.optim as optim
@@ -87,11 +89,16 @@ def train():
     # step 0: import the data and set it as Pytorch dataset
     # Dataset: CIFAR10 dataset
     # Cifar-10 data
-    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-    CIFAR10_train_data = datasets.CIFAR10('./data', train=True, download=True, transform=transform)
-    CIFAR10_test_data = datasets.CIFAR10('./data', train=False, download=True, transform=transform)
+    CIFAR10_train_data = datasets.CIFAR10('./data', train=True, download=True, transform=transforms.ToTensor())
+    CIFAR10_test_data = datasets.CIFAR10('./data', train=False, download=True, transform=transforms.ToTensor())
+    
+    #將訓練資料分為訓練和驗證資料
+    train_size = int(0.8 * len(CIFAR10_train_data))
+    valid_size = len(CIFAR10_train_data) - train_size
+    train_data, valid_data = random_split(CIFAR10_train_data, [train_size, valid_size])
 
-    train_loader = DataLoader(dataset=CIFAR10_train_data, batch_size=batch_size) 
+    train_loader = DataLoader(dataset=train_data, batch_size=batch_size) 
+    valid_loader = DataLoader(dataset=valid_data, batch_size=batch_size)
     test_loader = DataLoader(dataset=CIFAR10_test_data, batch_size=batch_size)
 
     # step 1: set up models, criterion and optimizer
@@ -100,9 +107,9 @@ def train():
     optimizer = optim.SGD(model.parameters(), lr=learning_rate)
 
     # step 2: start training
+    n_total_steps = len(train_loader)
     for epoch in range(num_epochs):
-        total_train = 0
-        correct_train = 0
+        valid_loss = float(0)
         for i, (images, labels) in enumerate(train_loader):
             images, labels = images.to(device), labels.to(device)
             # ::: your code :::
@@ -113,19 +120,20 @@ def train():
             outputs = model(images)
             loss = loss_func(outputs, labels)
             loss.backward()
-            optimizer.step()
+            optimizer.step()       #update weigths and bias
             # ::: end of code :::
         print(f'epoch {epoch+1}/{num_epochs}, loss = {loss.item():.4f}')
 
         # step 3: Validation loop
         # ::: your code :::
-        for i, (images, labels) in enumerate(train_loader):
-            outputs = model(train)
-            y = torch.max(outputs.data, 1)[1]
-            total_train += len(labels)
-            correct_train += (y == labels).float().sum()  
-        train_accuracy = 100 * correct_train / float(total_train)
-        print("訓練準確率：" + train_accuracy + "%")
+        for i, (images, labels) in enumerate(valid_loader):
+            images, labels = images.to(device), labels.to(device)
+
+            outputs = model(images)
+            loss_v = loss_func(outputs, labels)
+            valid_loss += loss_v.item()
+        valid_loss = valid_loss / len(valid_loader)
+        print('\tValidation Loss : {:.4f}'.format(valid_loss))
         # ::: end of code :::
     print('Finished Training')
 
